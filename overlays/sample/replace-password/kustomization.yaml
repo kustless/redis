@@ -1,0 +1,10 @@
+kind: ""
+apiversion: ""
+bases:
+- ../../../base
+
+secretGenerator:
+  - name: redis
+    env: secret.dec.env
+    type: Opaque
+    behavior: replace
