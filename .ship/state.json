@@ -1,0 +1,27 @@
+{
+  "v1": {
+    "config": null,
+    "helmValues": "## Bitnami Redis image version\n## ref: https://hub.docker.com/r/bitnami/redis/tags/\n##\nimage: bitnami/redis:3.2.8-r3\n\n## Specify a imagePullPolicy\n## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images\n##\nimagePullPolicy: IfNotPresent\n\n## Redis password\n## Defaults to a random 10-character alphanumeric string if not set\n## ref: https://github.com/bitnami/bitnami-docker-redis#setting-the-server-password-on-first-run\n##\n# redisPassword:\n\n## Enable persistence using Persistent Volume Claims\n## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/\n##\npersistence:\n  enabled: true\n\n  ## A manually managed Persistent Volume and Claim\n  ## Requires persistence.enabled: true\n  ## If defined, PVC must be created manually before volume will be bound\n  # existingClaim:\n\n  ## If defined, volume.beta.kubernetes.io/storage-class: \u003cstorageClass\u003e\n  ## Default: volume.alpha.kubernetes.io/storage-class: default\n  ##\n  # storageClass: \n  accessMode: ReadWriteOnce\n  size: 8Gi\n\n## Configure resource requests and limits\n## ref: http://kubernetes.io/docs/user-guide/compute-resources/\n##\nresources:\n  requests:\n    memory: 256Mi\n    cpu: 100m\n",
+    "releaseName": "redis",
+    "helmValuesDefaults": "## Bitnami Redis image version\n## ref: https://hub.docker.com/r/bitnami/redis/tags/\n##\nimage: bitnami/redis:3.2.8-r3\n\n## Specify a imagePullPolicy\n## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images\n##\nimagePullPolicy: IfNotPresent\n\n## Redis password\n## Defaults to a random 10-character alphanumeric string if not set\n## ref: https://github.com/bitnami/bitnami-docker-redis#setting-the-server-password-on-first-run\n##\n# redisPassword:\n\n## Enable persistence using Persistent Volume Claims\n## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/\n##\npersistence:\n  enabled: true\n\n  ## A manually managed Persistent Volume and Claim\n  ## Requires persistence.enabled: true\n  ## If defined, PVC must be created manually before volume will be bound\n  # existingClaim:\n\n  ## If defined, volume.beta.kubernetes.io/storage-class: \u003cstorageClass\u003e\n  ## Default: volume.alpha.kubernetes.io/storage-class: default\n  ##\n  # storageClass: \n  accessMode: ReadWriteOnce\n  size: 8Gi\n\n## Configure resource requests and limits\n## ref: http://kubernetes.io/docs/user-guide/compute-resources/\n##\nresources:\n  requests:\n    memory: 256Mi\n    cpu: 100m\n",
+    "upstream": "https://github.com/helm/charts/tree/1363763e27ae5b413aaaaa60d03c395f5ebdb0a2/stable/redis",
+    "metadata": {
+      "applicationType": "helm",
+      "icon": "https://bitnami.com/assets/stacks/redis/img/redis-stack-220x234.png",
+      "name": "redis",
+      "releaseNotes": "[stable/redis] Release 0.5.2 (#995)\n\n* redis: update to `bitnami/redis:3.2.8-r3`\r\n\r\n* redis: bump chart version to `0.5.2`",
+      "version": "0.5.2"
+    },
+    "contentSHA": "a7059a70e804d3678ea44d2eb7456133a80cc63279e00b9ea6016caeee9f0448",
+    "lifecycle": {
+      "stepsCompleted": {
+        "intro": true,
+        "kustomize": true,
+        "kustomize-intro": true,
+        "outro": true,
+        "render": true,
+        "values": true
+      }
+    }
+  }
+}

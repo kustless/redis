@@ -1,0 +1,7 @@
+kind: ""
+apiversion: ""
+resources:
+- deployment.yaml
+- pvc.yaml
+- secrets.yaml
+- svc.yaml
