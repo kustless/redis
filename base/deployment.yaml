@@ -13,11 +13,8 @@ spec:
     spec:
       containers:
         - env:
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: redis-password
-                  name: redis
+            - name: ALLOW_EMPTY_PASSWORD
+              value: "yes"
           image: bitnami/redis:3.2.8-r3
           imagePullPolicy: IfNotPresent
           livenessProbe:
