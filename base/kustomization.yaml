@@ -6,6 +6,6 @@ resources:
   - svc.yaml
 
 secretGenerator:
-  - name: redis-redis
+  - name: redis
     env: insecure.conf
     type: Opaque

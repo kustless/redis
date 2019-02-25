@@ -1,41 +1,38 @@
 apiVersion: v1
 data:
-  redis-password: MHZqUUhjVVRkTQ==
+  redis-password: Q2hhbmdlTWUh
 kind: Secret
 metadata:
-  labels:
-    app: redis-redis
-    release: redis
-  name: redis-redis
+  name: redis-7b8m72f2cb
 type: Opaque
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: redis-redis
+    app: redis
     release: redis
-  name: redis-redis
+  name: redis
 spec:
   ports:
   - name: redis
     port: 6379
     targetPort: redis
   selector:
-    app: redis-redis
+    app: redis
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    app: redis-redis
+    app: redis
     release: redis
-  name: redis-redis
+  name: redis
 spec:
   template:
     metadata:
       labels:
-        app: redis-redis
+        app: redis
     spec:
       containers:
       - env:
@@ -43,7 +40,7 @@ spec:
           valueFrom:
             secretKeyRef:
               key: redis-password
-              name: redis-redis
+              name: redis-7b8m72f2cb
         image: bitnami/redis:3.2.8-r3
         imagePullPolicy: IfNotPresent
         livenessProbe:
@@ -53,7 +50,7 @@ spec:
             - ping
           initialDelaySeconds: 30
           timeoutSeconds: 5
-        name: redis-redis
+        name: redis
         ports:
         - containerPort: 6379
           name: redis
@@ -74,7 +71,7 @@ spec:
       volumes:
       - name: redis-data
         persistentVolumeClaim:
-          claimName: redis-redis
+          claimName: redis
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -82,9 +79,9 @@ metadata:
   annotations:
     volume.alpha.kubernetes.io/storage-class: default
   labels:
-    app: redis-redis
+    app: redis
     release: redis
-  name: redis-redis
+  name: redis
 spec:
   accessModes:
   - ReadWriteOnce
