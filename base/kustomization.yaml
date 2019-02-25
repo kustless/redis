@@ -1,7 +1,11 @@
 kind: ""
 apiversion: ""
 resources:
-- deployment.yaml
-- pvc.yaml
-- secrets.yaml
-- svc.yaml
+  - deployment.yaml
+  - pvc.yaml
+  - svc.yaml
+
+secretGenerator:
+  - name: redis-redis
+    env: insecure.conf
+    type: Opaque
