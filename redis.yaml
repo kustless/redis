@@ -61,7 +61,7 @@ metadata:
 ---
 apiVersion: v1
 data:
-  redis-password: WGdYRHlndDdsaA==
+  redis-password: bzRoTzNBM3JmSQ==
 kind: Secret
 metadata:
   labels:
@@ -123,12 +123,12 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/configmap: 7454cca1b31352e57cbf41f43c02b4601df16051f3f2f8db7788ba992756e813
-        checksum/health: 80d95519b1bfc4c5a1a237460d85d5c1b3c4bd73730bb29fcf614de822a49f29
-        checksum/secret: ddcd6dd04997c055e5d325ff89be5b6c0c88531cc8d2e09d38adc2cdc98f6cf3
+        checksum/configmap: afd8c74b31227101df4472885273fd35ee55160e8ba8e076a109ba88cb7fb9b4
+        checksum/health: f5c14b17cdcda2c2e7410e9a1ff3195ef3efbf57d03055e1b6b8fbf85440949e
+        checksum/secret: ea677ca68d7ba3098643dcfb45731417fdef66da303bfa57a544b15ab4ec6fb0
       labels:
         app: redis
-        chart: redis-6.1.4
+        chart: redis-6.2.0
         release: redis
         role: slave
     spec:
@@ -240,12 +240,12 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/configmap: 7454cca1b31352e57cbf41f43c02b4601df16051f3f2f8db7788ba992756e813
-        checksum/health: 80d95519b1bfc4c5a1a237460d85d5c1b3c4bd73730bb29fcf614de822a49f29
-        checksum/secret: 3b1ec516ee7fb258b61702745e9ede77457e7a2da5e042b971777b4a3b105bbd
+        checksum/configmap: afd8c74b31227101df4472885273fd35ee55160e8ba8e076a109ba88cb7fb9b4
+        checksum/health: f5c14b17cdcda2c2e7410e9a1ff3195ef3efbf57d03055e1b6b8fbf85440949e
+        checksum/secret: 5390453f1ebe300ef2958c884f5aa22442c748d0187f2c92185542ca11727ba2
       labels:
         app: redis
-        chart: redis-6.1.4
+        chart: redis-6.2.0
         release: redis
         role: master
     spec:
