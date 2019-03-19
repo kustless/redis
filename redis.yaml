@@ -61,7 +61,7 @@ metadata:
 ---
 apiVersion: v1
 data:
-  redis-password: d0JpNmxXeEFUdQ==
+  redis-password: MW9jcWJwSG10RQ==
 kind: Secret
 metadata:
   labels:
@@ -123,12 +123,12 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/configmap: da992808b7e8984ff52cf050d786599eeefaf766159cb45138c6134b9c1f5f4e
-        checksum/health: 47946dd04cc65a4919e770cfd656bec2ddc3f31fb586a32b56a559be8ad42709
-        checksum/secret: 9df5faeba9e8093c10df05dda283b89a68bbf94de3d54c2b9767c2aa3665800a
+        checksum/configmap: 1f5a8f4d30be08166c51e87969674eee9da408ef3f5ee3bd9dec9390485cbdc9
+        checksum/health: 1580b858f8c429a330ab627f5c2a116e1a480f67462b61d0fd72b999954ba349
+        checksum/secret: 1dfa5b4e41f232235980ea759661cd9a89d9d2c0fc23a35d846980c7bb12f3b1
       labels:
         app: redis
-        chart: redis-6.4.1
+        chart: redis-6.4.2
         release: redis
         role: slave
     spec:
@@ -171,7 +171,7 @@ spec:
             secretKeyRef:
               key: redis-password
               name: redis
-        image: docker.io/bitnami/redis:4.0.13
+        image: docker.io/bitnami/redis:4.0.14
         imagePullPolicy: Always
         livenessProbe:
           exec:
@@ -240,12 +240,12 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/configmap: da992808b7e8984ff52cf050d786599eeefaf766159cb45138c6134b9c1f5f4e
-        checksum/health: 47946dd04cc65a4919e770cfd656bec2ddc3f31fb586a32b56a559be8ad42709
-        checksum/secret: a62cea9f85714378205639686425d4a789cbae1a4aa56de08f7683feb596d727
+        checksum/configmap: 1f5a8f4d30be08166c51e87969674eee9da408ef3f5ee3bd9dec9390485cbdc9
+        checksum/health: 1580b858f8c429a330ab627f5c2a116e1a480f67462b61d0fd72b999954ba349
+        checksum/secret: 43967c9f045f013cac171ebbf9028bf3320d8ee867a283c876b77cddb09090e3
       labels:
         app: redis
-        chart: redis-6.4.1
+        chart: redis-6.4.2
         release: redis
         role: master
     spec:
@@ -273,7 +273,7 @@ spec:
               name: redis
         - name: REDIS_PORT
           value: "6379"
-        image: docker.io/bitnami/redis:4.0.13
+        image: docker.io/bitnami/redis:4.0.14
         imagePullPolicy: Always
         livenessProbe:
           exec:
