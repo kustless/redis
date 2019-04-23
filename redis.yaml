@@ -50,6 +50,7 @@ data:
     # maxmemory-policy volatile-lru
   replica.conf: |-
     dir /data
+    slave-read-only yes
     rename-command FLUSHDB ""
     rename-command FLUSHALL ""
 kind: ConfigMap
@@ -61,7 +62,7 @@ metadata:
 ---
 apiVersion: v1
 data:
-  redis-password: RnA2YXBVbW01WA==
+  redis-password: cjJ5RzlCTUFkRA==
 kind: Secret
 metadata:
   labels:
@@ -69,6 +70,24 @@ metadata:
     release: redis
   name: redis
 type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: redis
+    release: redis
+  name: redis-headless
+spec:
+  clusterIP: None
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: redis
+  selector:
+    app: redis
+    release: redis
+  type: ClusterIP
 ---
 apiVersion: v1
 kind: Service
@@ -106,123 +125,6 @@ spec:
     role: slave
   type: ClusterIP
 ---
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  labels:
-    app: redis
-    release: redis
-  name: redis-slave
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: redis
-      release: redis
-      role: slave
-  template:
-    metadata:
-      annotations:
-        checksum/configmap: 6b3c8b1e7c3352d07944bae79ea15e63a1648229cf3b7cd21cce73e239ec3313
-        checksum/health: 898cb01e52c77f70bc1eb98bb653fe2be8843de21d9a3c7a763b87eb57dfad03
-        checksum/secret: 68ea5539520f5d2d49ef5aa5263cdc424082f03c84a072d15c5d9759b626298f
-      labels:
-        app: redis
-        chart: redis-6.4.5
-        release: redis
-        role: slave
-    spec:
-      containers:
-      - command:
-        - /bin/bash
-        - -c
-        - |
-          if [[ -n $REDIS_PASSWORD_FILE ]]; then
-            password_aux=`cat ${REDIS_PASSWORD_FILE}`
-            export REDIS_PASSWORD=$password_aux
-          fi
-          if [[ -n $REDIS_MASTER_PASSWORD_FILE ]]; then
-            password_aux=`cat ${REDIS_MASTER_PASSWORD_FILE}`
-            export REDIS_MASTER_PASSWORD=$password_aux
-          fi
-          ARGS=("--port" "${REDIS_PORT}")
-          ARGS+=("--requirepass" "${REDIS_PASSWORD}")
-          ARGS+=("--slaveof" "${REDIS_MASTER_HOST}" "${REDIS_MASTER_PORT_NUMBER}")
-          ARGS+=("--masterauth" "${REDIS_MASTER_PASSWORD}")
-          ARGS+=("--include" "/opt/bitnami/redis/etc/redis.conf")
-          ARGS+=("--include" "/opt/bitnami/redis/etc/replica.conf")
-          /run.sh "${ARGS[@]}"
-        env:
-        - name: REDIS_REPLICATION_MODE
-          value: slave
-        - name: REDIS_MASTER_HOST
-          value: redis-master
-        - name: REDIS_PORT
-          value: "6379"
-        - name: REDIS_MASTER_PORT_NUMBER
-          value: "6379"
-        - name: REDIS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              key: redis-password
-              name: redis
-        - name: REDIS_MASTER_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              key: redis-password
-              name: redis
-        image: docker.io/bitnami/redis:4.0.14
-        imagePullPolicy: Always
-        livenessProbe:
-          exec:
-            command:
-            - sh
-            - -c
-            - /health/ping_local_and_master.sh 5
-          failureThreshold: 5
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          successThreshold: 1
-          timeoutSeconds: 5
-        name: redis
-        ports:
-        - containerPort: 6379
-          name: redis
-        readinessProbe:
-          exec:
-            command:
-            - sh
-            - -c
-            - /health/ping_local_and_master.sh 1
-          failureThreshold: 5
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          successThreshold: 1
-          timeoutSeconds: 1
-        resources: null
-        securityContext:
-          runAsUser: 1001
-        volumeMounts:
-        - mountPath: /health
-          name: health
-        - mountPath: /data
-          name: redis-data
-        - mountPath: /opt/bitnami/redis/etc
-          name: config
-      securityContext:
-        fsGroup: 1001
-      serviceAccountName: default
-      volumes:
-      - configMap:
-          defaultMode: 493
-          name: redis-health
-        name: health
-      - configMap:
-          name: redis
-        name: config
-      - emptyDir: {}
-        name: redis-data
----
 apiVersion: apps/v1beta2
 kind: StatefulSet
 metadata:
@@ -236,16 +138,16 @@ spec:
       app: redis
       release: redis
       role: master
-  serviceName: redis-master
+  serviceName: redis-headless
   template:
     metadata:
       annotations:
-        checksum/configmap: 6b3c8b1e7c3352d07944bae79ea15e63a1648229cf3b7cd21cce73e239ec3313
-        checksum/health: 898cb01e52c77f70bc1eb98bb653fe2be8843de21d9a3c7a763b87eb57dfad03
-        checksum/secret: 4824ec64ecef723b28e8f4984eac6344756cca4a7c9d830db63bb872c927c039
+        checksum/configmap: 9b4d5a6e628eb87f968dbbb40fc2516fdc8d86618539a9b92632e7603516b532
+        checksum/health: aec3c89682c54cbafe738ac8e9c7340e8adf2478b481442b883b86ce2682cad6
+        checksum/secret: 1f1203809bd4b3c1cc90ecec092d395f04a01fff8df045129f3ef2dbbb89a257
       labels:
         app: redis
-        chart: redis-6.4.5
+        chart: redis-7.0.0
         release: redis
         role: master
     spec:
@@ -253,16 +155,13 @@ spec:
       - command:
         - /bin/bash
         - -c
-        - |
-          if [[ -n $REDIS_PASSWORD_FILE ]]; then
-            password_aux=`cat ${REDIS_PASSWORD_FILE}`
-            export REDIS_PASSWORD=$password_aux
-          fi
-          ARGS=("--port" "${REDIS_PORT}")
-          ARGS+=("--requirepass" "${REDIS_PASSWORD}")
-          ARGS+=("--include" "/opt/bitnami/redis/etc/redis.conf")
-          ARGS+=("--include" "/opt/bitnami/redis/etc/master.conf")
-          /run.sh ${ARGS[@]}
+        - "if [[ -n $REDIS_PASSWORD_FILE ]]; then\n  password_aux=`cat ${REDIS_PASSWORD_FILE}`\n
+          \ export REDIS_PASSWORD=$password_aux\nfi\nif [[ ! -f /opt/bitnami/redis/etc/master.conf
+          ]];then\n  cp /opt/bitnami/redis/mounted-etc/master.conf /opt/bitnami/redis/etc/master.conf\nfi\nif
+          [[ ! -f /opt/bitnami/redis/etc/redis.conf ]];then\n  cp /opt/bitnami/redis/mounted-etc/redis.conf
+          /opt/bitnami/redis/etc/redis.conf\nfi          \nARGS=(\"--port\" \"${REDIS_PORT}\")\nARGS+=(\"--requirepass\"
+          \"${REDIS_PASSWORD}\")\nARGS+=(\"--include\" \"/opt/bitnami/redis/etc/redis.conf\")\nARGS+=(\"--include\"
+          \"/opt/bitnami/redis/etc/master.conf\")\n/run.sh ${ARGS[@]}\n"
         env:
         - name: REDIS_REPLICATION_MODE
           value: master
@@ -310,8 +209,10 @@ spec:
         - mountPath: /data
           name: redis-data
           subPath: null
-        - mountPath: /opt/bitnami/redis/etc
+        - mountPath: /opt/bitnami/redis/mounted-etc
           name: config
+        - mountPath: /opt/bitnami/redis/etc/
+          name: redis-tmp-conf
       securityContext:
         fsGroup: 1001
       serviceAccountName: default
@@ -323,6 +224,8 @@ spec:
       - configMap:
           name: redis
         name: config
+      - emptyDir: {}
+        name: redis-tmp-conf
   updateStrategy:
     type: RollingUpdate
   volumeClaimTemplates:
@@ -330,6 +233,138 @@ spec:
       labels:
         app: redis
         component: master
+        heritage: Tiller
+        release: redis
+      name: redis-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 8Gi
+---
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  labels:
+    app: redis
+    release: redis
+  name: redis-slave
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: redis
+      release: redis
+      role: slave
+  serviceName: redis-headless
+  template:
+    metadata:
+      annotations:
+        checksum/configmap: 9b4d5a6e628eb87f968dbbb40fc2516fdc8d86618539a9b92632e7603516b532
+        checksum/health: aec3c89682c54cbafe738ac8e9c7340e8adf2478b481442b883b86ce2682cad6
+        checksum/secret: cfd8b979ed10424667f91aab35b10300ff7c1b55db7ffcdcee8ffcaaf4b78061
+      labels:
+        app: redis
+        chart: redis-7.0.0
+        release: redis
+        role: slave
+    spec:
+      containers:
+      - command:
+        - /bin/bash
+        - -c
+        - "if [[ -n $REDIS_PASSWORD_FILE ]]; then\n  password_aux=`cat ${REDIS_PASSWORD_FILE}`\n
+          \ export REDIS_PASSWORD=$password_aux\nfi\nif [[ -n $REDIS_MASTER_PASSWORD_FILE
+          ]]; then\n  password_aux=`cat ${REDIS_MASTER_PASSWORD_FILE}`\n  export REDIS_MASTER_PASSWORD=$password_aux\nfi\nif
+          [[ ! -f /opt/bitnami/redis/etc/replica.conf ]];then\n  cp /opt/bitnami/redis/mounted-etc/replica.conf
+          /opt/bitnami/redis/etc/replica.conf\nfi\nif [[ ! -f /opt/bitnami/redis/etc/redis.conf
+          ]];then\n  cp /opt/bitnami/redis/mounted-etc/redis.conf /opt/bitnami/redis/etc/redis.conf\nfi
+          \         \nARGS=(\"--port\" \"${REDIS_PORT}\")\nARGS+=(\"--requirepass\"
+          \"${REDIS_PASSWORD}\")\nARGS+=(\"--slaveof\" \"${REDIS_MASTER_HOST}\" \"${REDIS_MASTER_PORT_NUMBER}\")\nARGS+=(\"--masterauth\"
+          \"${REDIS_MASTER_PASSWORD}\")\nARGS+=(\"--include\" \"/opt/bitnami/redis/etc/redis.conf\")\nARGS+=(\"--include\"
+          \"/opt/bitnami/redis/etc/replica.conf\")\n/run.sh \"${ARGS[@]}\"\n"
+        env:
+        - name: REDIS_REPLICATION_MODE
+          value: slave
+        - name: REDIS_MASTER_HOST
+          value: redis-master-0.redis-headless.default.svc.cluster.local
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_MASTER_PORT_NUMBER
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: redis-password
+              name: redis
+        - name: REDIS_MASTER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: redis-password
+              name: redis
+        image: docker.io/bitnami/redis:4.0.14
+        imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - /health/ping_local_and_master.sh 5
+          failureThreshold: 5
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: redis
+        ports:
+        - containerPort: 6379
+          name: redis
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - /health/ping_local_and_master.sh 5
+          failureThreshold: 5
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 10
+        resources: null
+        securityContext:
+          runAsUser: 1001
+        volumeMounts:
+        - mountPath: /health
+          name: health
+        - mountPath: /data
+          name: redis-data
+        - mountPath: /opt/bitnami/redis/mounted-etc
+          name: config
+        - mountPath: /opt/bitnami/redis/etc
+          name: redis-tmp-conf
+      securityContext:
+        fsGroup: 1001
+      serviceAccountName: default
+      volumes:
+      - configMap:
+          defaultMode: 493
+          name: redis-health
+        name: health
+      - configMap:
+          name: redis
+        name: config
+      - emptyDir: {}
+        name: sentinel-tmp-conf
+      - emptyDir: {}
+        name: redis-tmp-conf
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      labels:
+        app: redis
+        component: slave
         heritage: Tiller
         release: redis
       name: redis-data
