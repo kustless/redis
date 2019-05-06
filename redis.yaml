@@ -47,7 +47,10 @@ data:
     rename-command FLUSHALL ""
   redis.conf: |-
     # User-supplied configuration:
-    # maxmemory-policy volatile-lru
+    # Enable AOF https://redis.io/topics/persistence#append-only-file
+    appendonly yes
+    # Disable RDB persistence, AOF persistence already enabled.
+    save ""
   replica.conf: |-
     dir /data
     slave-read-only yes
@@ -62,7 +65,7 @@ metadata:
 ---
 apiVersion: v1
 data:
-  redis-password: ZWYxbkJnZjUwZQ==
+  redis-password: NFBXUWpZMk4zeQ==
 kind: Secret
 metadata:
   labels:
@@ -142,12 +145,12 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/configmap: 41a0d244cea1e1a8400d010bf31b9580db5c79cf44cef01cde7307c0b42962f3
-        checksum/health: b79e3e9ffbf34502280eb5bce3305a79cb1726ebf018646c262a3bf663944562
-        checksum/secret: 47b28a2b13d21ac83d7bd5a1f9c657ea1cfe2398925454c714536b9271ad31b9
+        checksum/configmap: adf55627022a9d29b0c9b2a12623e859a46f9e209972d006e7e328617bfe48a1
+        checksum/health: 83382ac9a35b5d2f68d6e26009e1666665bdc0cdd79b0ead4103c2525d58ff01
+        checksum/secret: 64f0c8c36500fcb9b7e765601d83271dd70d845fa5fceed3b270fadcd144950c
       labels:
         app: redis
-        chart: redis-7.0.3
+        chart: redis-7.1.0
         release: redis
         role: master
     spec:
@@ -261,12 +264,12 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/configmap: 41a0d244cea1e1a8400d010bf31b9580db5c79cf44cef01cde7307c0b42962f3
-        checksum/health: b79e3e9ffbf34502280eb5bce3305a79cb1726ebf018646c262a3bf663944562
-        checksum/secret: bacd19e90a6b3befdd2aed2b5d865d93e80e78742cfe3b31e5748a169eab8127
+        checksum/configmap: adf55627022a9d29b0c9b2a12623e859a46f9e209972d006e7e328617bfe48a1
+        checksum/health: 83382ac9a35b5d2f68d6e26009e1666665bdc0cdd79b0ead4103c2525d58ff01
+        checksum/secret: 3cef9e36293635d282fbd37d6f915a89671b0f9f5d2c631e5cfe6789b95fa31a
       labels:
         app: redis
-        chart: redis-7.0.3
+        chart: redis-7.1.0
         release: redis
         role: slave
     spec:
